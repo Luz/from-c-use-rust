@@ -1,0 +1,4 @@
+/target
+/Cargo.lock
+cbindgen.toml
+c-project/main
