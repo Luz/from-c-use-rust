@@ -1,15 +1,3 @@
-// Notes to my future self:
-//
-// 1) Vec in Rust has no defined ABI:
-// Link: https://stackoverflow.com/questions/58311426/how-do-i-use-cbindgen-to-return-and-free-a-boxvec
-// As we can not pass Vec over to C, we have the option to not use Vec at all (when passing it)
-//
-// 2) Passing raw pointers:
-// We may want to pass handles of Rust objects to C and later have them back for further processing
-// bindgen shall create a struct, as we do not want to use void pointers all over the place in C
-// By just omitting the "#[repr(C)]", as seen for the Path structure, a C struct is created
-// So if possible, prefer this over the c_void (dont "use std::os::raw::c_void")
-
 #[derive(Debug, Default, Clone)]
 #[repr(C)]
 pub struct Point {
@@ -18,8 +6,8 @@ pub struct Point {
 }
 
 #[derive(Debug, Default)]
-// There is no C-represantation in C for a Vec, so dont use "#[repr(C)]"
-// here, as cbindgen creates something uncompileable
+// There is no C-representation in C for a Vec, so dont use "#[repr(C)]".
+// Otherwise, cbindgen would create something uncompileable.
 pub struct Path {
     path: Vec<Point>,
 }
@@ -47,8 +35,8 @@ pub extern "C" fn newPathFromZero() -> *mut Path {
 pub extern "C" fn deletePath(h: *mut Path) {
     let owned = unsafe { Box::from_raw(h) };
     println!("Rust: deletePath: {:?}", owned);
-    // A drop here is not necessary, as heap stuff goes out of scope and is deleted
-    // drop(owned);
+    // "drop(owned);" is not necessary:
+    // Rust frees the data on the heap as soon as the pointer goes out of scope
 }
 #[no_mangle]
 pub extern "C" fn addPointToPath(handle: *mut Path, p: Point) -> *mut Path {
@@ -65,9 +53,9 @@ pub extern "C" fn addPointToPath(handle: *mut Path, p: Point) -> *mut Path {
     }
 
     println!("Rust: addPointToPath({:?}, {:?})", path, p);
-    println!("      {:?}", path);
+    println!("{:?}", path);
     path.path.push(p);
-    println!("      {:?}", path);
+    println!("{:?}", path);
 
     path
 }
