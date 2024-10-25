@@ -7,6 +7,10 @@ A Rust static library called from C.
 - Demo C-project to call the Rust functions
 - Using valgrind to prove there are no memory leaks
 
+## Dependencies
+- Rust and C tooling
+- valgrind
+
 ## Usage
 ```Bash
 cargo build --release
